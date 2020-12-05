@@ -1,0 +1,41 @@
+Code : center of gravity
+
+def compute_cog(in_im, bkg_val=255):
+    count = (in_im != bkg_val).sum()
+    y_center, x_center = np.argwhere(in_im != bkg_val).sum(0) / count
+    return int(y_center), int(x_center)
+	
+	
+	
+	
+Code : center image around center of gravity
+
+def center_im(in_im, in_cog_yx, in_value=255):
+    ''' center image on input point
+        :param in_im: np image
+        :param in_cog_yx: point used to center image
+        :param in_value: output value when pixels are added to input image
+        :return: centered image
+        '''
+    in_size_y = in_im.shape[0]  # hauteur
+    in_size_x = in_im.shape[1]  # largeur
+
+    new_size_y = 2 * max(in_cog_yx[0], in_size_y - in_cog_yx[0])
+    new_size_x = 2 * max(in_cog_yx[1], in_size_x - in_cog_yx[1])
+    out_im = in_value * np.ones([new_size_y, new_size_x]).astype(np.uint8)
+
+    out_cog_yx = [int(new_size_y/2), int(new_size_x/2)]
+    beginy = out_cog_yx[0] - in_cog_yx[0]
+    endy = out_cog_yx[0] + (in_size_y - in_cog_yx[0])
+    beginx = out_cog_yx[1] - in_cog_yx[1]
+    endx = out_cog_yx[1] + (in_size_x - in_cog_yx[1])
+    out_im[beginy:endy, beginx:endx] = in_im
+    return out_im
+	
+	
+	
+	
+Code : combine both
+
+            ycog, xcog = compute_cog(X, bkg_val=background_value)
+            X = center_im(X, [ycog, xcog], in_value=255)
